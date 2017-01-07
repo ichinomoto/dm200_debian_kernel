@@ -1,0 +1,27 @@
+obj-y += common.o
+obj-y += cpu.o
+obj-y += rk3036.o
+obj-y += rk312x.o
+obj-y += rk3126b.o
+obj-y += rk3188.o
+obj-y += rk3288.o
+ifneq ($(CONFIG_ARM_TRUSTZONE),y)
+obj-y += ddr_freq.o
+endif
+obj-y += efuse.o
+obj-y += pvtm.o
+obj-y += rk_system_status.o
+obj-$(CONFIG_PM) += rockchip_pm.o sleep.o rk312x_sleep.o
+obj-$(CONFIG_RK_FPGA) += fpga.o
+obj-$(CONFIG_CPU_IDLE) += cpuidle.o
+obj-$(CONFIG_SMP) += platsmp.o
+obj-$(CONFIG_HOTPLUG_CPU) += hotplug.o
+obj-$(CONFIG_FIQ_DEBUGGER) += rk_fiq_debugger.o
+obj-$(CONFIG_RK_LAST_LOG) += last_log.o
+obj-$(CONFIG_DVFS) += dvfs.o
+obj-$(CONFIG_RK_VCODEC) += vcodec_service.o
+obj-$(CONFIG_RK_PL330_DMA_TEST) += dma_memcpy_test.o
+obj-$(CONFIG_BLOCK_RKNAND) += rknandbase.o
+obj-$(CONFIG_DDR_TEST) += ddr_test.o
+obj-$(CONFIG_ROCK_CHIP_SOC_CAMERA) += rk_camera.o
+obj-$(CONFIG_PM_WARP) += snapshot.o

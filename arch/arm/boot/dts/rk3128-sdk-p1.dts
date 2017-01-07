@@ -1,0 +1,272 @@
+/dts-v1/;
+
+#include "rk3128.dtsi"
+#include "rk3128-cif-sensor.dtsi"
+#include "vtl_ts_362.dtsi"
+#include "rk312x-sdk.dtsi"
+#include "lcd-sofia-3gr-svb.dtsi"
+
+/ {
+	 compatible = "rockchip,rk3128";
+        backlight: backlight {
+                compatible = "pwm-backlight";
+                pwms = <&pwm0 0 25000>;
+                brightness-levels = <
+		     255 253 252 251 250 249 248 247 246 245 244 243 242 241 240 
+		     239 238 237 236 235 234 233 232 231 230 229 228 227 226 225 224 223 222 221 220
+		     219 218 217 216 215 214 213 212 211 210 209 208 207 206 205 204 203 202 201 200 
+		     199 198 197 196 195 194 193 192 191 190 189 188 187 186 185 184 183 182 181 180
+		     179 178 177 176 175 174 173 172 171 170 169 168 167 166 165 164 163 162 161 160
+		     159 158 157 156 155 154 153 152 151 150 149 148 147 146 145 144 143 142 141 140
+		     139 138 137 136 135 134 133 132 131 130 129 128 127 126 125 124 123 122 121 120
+		     119 118 117 116 115 114 113 112 111 110 109 108 107 106 105 104 103 102 101 100
+		     99 98 97 96 95 94 93 92 91 90 89 88 87 86 85 84 83 82 81 80 79 78 77 76 75 74 73 72 71 70
+		     69 68 67 66 65 64 63 62 61 60 59 58 57 56 55 54 53 52 51 50 49 48 47 46 45 44 43 42 41 40
+		     39 38 37 36 35 34 33 32 31 30 29 28 27 26 25 24 23 22 21 20 19 18 17 16 15 14 13 12 11 10
+		     9 8 7 6 5 4 3 2 1 0>;
+                default-brightness-level = <128>;
+                enable-gpios = <&gpio0 GPIO_D3 GPIO_ACTIVE_HIGH>;
+        };
+
+	usb_control {
+		compatible = "rockchip,rk3126-usb-control";
+
+		host_drv_gpio = <&gpio3 GPIO_C4 GPIO_ACTIVE_LOW>;
+		otg_drv_gpio = <&gpio3 GPIO_C1 GPIO_ACTIVE_LOW>;
+
+		rockchip,remote_wakeup;
+		rockchip,usb_irq_wakeup;
+	};
+	
+	
+    wireless-wlan {
+        compatible = "wlan-platdata";
+
+        wifi_chip_type = "bcmwif";
+        sdio_vref = <1800>; //1800mv or 3300mv
+
+        //power_ctrl_by_pmu;
+        pmu_regulator = "act_ldo3";
+        pmu_enable_level = <1>; //1->HIGH, 0->LOW	
+
+        WIFI,poweren_gpio = <&gpio0 GPIO_D6 GPIO_ACTIVE_LOW>;
+        WIFI,host_wake_irq = <&gpio3 GPIO_C7 GPIO_ACTIVE_HIGH>;
+        WIFI,reset_gpio = <&gpio3 GPIO_D3 GPIO_ACTIVE_HIGH>;
+
+        status = "okay";
+    };
+
+    wireless-bluetooth {
+        compatible = "bluetooth-platdata";
+
+        uart_rts_gpios = <&gpio0 GPIO_C1 GPIO_ACTIVE_LOW>;
+        pinctrl-names = "default","rts_gpio";
+        pinctrl-0 = <&uart0_rts>;
+        pinctrl-1 = <&uart0_rts_gpio>;
+
+        //BT,power_gpio = <&gpio4 GPIO_D3 GPIO_ACTIVE_HIGH>;
+        BT,reset_gpio = <&gpio3 GPIO_C5 GPIO_ACTIVE_HIGH>;
+        BT,wake_gpio = <&gpio3 GPIO_D2 GPIO_ACTIVE_HIGH>;
+        BT,wake_host_irq = <&gpio3 GPIO_C6 GPIO_ACTIVE_LOW>;
+
+        status = "okay";
+    };
+
+};
+&uart0 {
+        status = "okay";
+        dma-names = "!tx", "!rx";
+        pinctrl-0 = <&uart0_xfer &uart0_cts>;
+};
+
+&sdmmc {/* SDMMC_DET = GPIO1_C1 */
+	cd-gpios = <&gpio1 GPIO_C1 GPIO_ACTIVE_HIGH>;/*CD GPIO*/
+    status = "okay";
+};
+
+&uart1 {/* UART1 = GPIO1_B1 */
+	cd-gpios = <&gpio1 GPIO_B1 GPIO_ACTIVE_HIGH>;/*CD GPIO*/
+    status = "ok";
+};
+
+&fb {
+	rockchip,disp-mode = <ONE_DUAL>;
+	rockchip,uboot-logo-on = <1>;
+};
+
+&rk_screen {
+	display-timings = <&disp_timings>;
+};
+
+&lvds {
+	status = "okay";
+
+	pinctrl-names = "lcdc";
+	pinctrl-0 = <&lcdc0_lcdc_d>;
+};
+
+&lcdc {
+	status = "okay";
+
+	backlight = <&backlight>;
+	pinctrl-names = "default", "gpio";
+	pinctrl-0 = <&lcdc0_lcdc>;
+	pinctrl-1 = <&lcdc0_gpio>;
+
+	rockchip,fb-win-map = <FB_DEFAULT_ORDER>;
+	power_ctr: power_ctr {
+		rockchip,debug = <0>;
+		lcd_cs: lcd_cs {
+			rockchip,power_type = <GPIO>;
+			gpios = <&gpio0 GPIO_D0 GPIO_ACTIVE_HIGH>;
+			rockchip,delay = <10>;
+		};
+	};
+};
+
+&i2s0 {
+	status = "okay";
+};
+
+&i2c0 {
+	status = "okay";
+	
+	sensor@1d {
+		compatible = "gs_mma8452";
+		reg = <0x1d>;
+		type = <SENSOR_TYPE_ACCEL>;
+		//irq-gpio = <&gpio8 GPIO_A0 IRQ_TYPE_LEVEL_LOW>;
+		irq-gpio = <&gpio1 GPIO_B2 IRQ_TYPE_LEVEL_LOW>;
+		irq_enable = <1>;
+		poll_delay_ms = <30>;
+		layout = <1>;
+	};
+/*
+	sensor@0d {
+		compatible = "ak8975";
+		reg = <0x0d>;
+		type = <SENSOR_TYPE_COMPASS>;
+		irq-gpio = <&gpio8 GPIO_A1 IRQ_TYPE_EDGE_RISING>;
+		irq_enable = <1>;
+		poll_delay_ms = <30>;
+		layout = <1>;
+	}; */
+};
+
+&hdmi {
+        status = "okay";
+};
+
+&sdmmc {
+       cd-gpios = <&gpio1 GPIO_C1 GPIO_ACTIVE_HIGH>;/*CD GPIO*/
+};
+
+&dwc_control_usb {
+	usb_uart {
+		status = "disable";
+	};
+};
+&codec {
+	spk_ctl_io = <&gpio1 GPIO_B3 GPIO_ACTIVE_HIGH>;
+        spk-mute-delay = <200>;
+        hp-mute-delay = <100>;
+        rk312x_for_mid = <1>;
+        is_rk3128 = <0>;
+        spk_volume = <25>;
+        hp_volume = <25>;
+        capture_volume = <26>;
+        gpio_debug = <1>;
+        codec_hp_det = <1>;
+};
+
+&rk3128_cif_sensor{
+	status = "okay";
+};
+
+
+&clk_core_dvfs_table {
+	operating-points = <
+		/* KHz    uV */
+		216000 1000000/*925000*/
+		408000 1025000/*925000*/
+		600000 1050000/*950000*/
+		696000 1075000/*975000*/
+		816000 1100000/*1050000*/
+		//1008000 1175000
+		//1200000 1300000
+		//1296000 1350000
+		//1320000 1375000
+		>;
+	virt-temp-limit-1-cpu-busy = <
+	/* target-temp	limit-freq */
+		75	1008000
+		85	1200000
+		95	1200000
+		100	1200000
+		>;
+	virt-temp-limit-2-cpu-busy = <
+	/* target-temp	limit-freq */
+		75	912000
+		85	1008000
+		95	1104000
+		100	1200000
+		>;
+	virt-temp-limit-3-cpu-busy = <
+	/* target-temp	limit-freq */
+		75	816000
+		85	912000
+		95	100800
+		100	110400
+		>;
+	virt-temp-limit-4-cpu-busy = <
+	/* target-temp	limit-freq */
+		75	816000
+		85	912000
+		95	100800
+		100	110400
+		>;
+	temp-limit-enable = <0>/*<1>*/;
+	target-temp = <85>;
+	status="okay";
+};
+
+&clk_gpu_dvfs_table {
+	operating-points = <
+		/* KHz    uV */
+		200000 950000
+		300000 975000
+		400000 1075000
+		//480000 1175000
+		>;
+	status="okay";
+};
+
+&clk_ddr_dvfs_table {
+	operating-points = <
+		/* KHz    uV */
+		//200000 950000
+		//300000 950000
+		400000 1000000
+		//533000 1200000
+		>;
+
+	freq-table = <
+		/*status		freq(KHz)*/
+		SYS_STATUS_NORMAL	400000
+		SYS_STATUS_SUSPEND	400000
+		SYS_STATUS_VIDEO_1080P  400000
+		SYS_STATUS_VIDEO_4K     400000
+		SYS_STATUS_PERFORMANCE  400000
+		SYS_STATUS_DUALVIEW	400000
+		SYS_STATUS_BOOST	400000
+		SYS_STATUS_ISP		400000
+		>;
+	auto-freq-table = <
+		//240000
+		//324000
+		396000
+		//528000
+		>;
+	auto-freq=<0>;
+	status="okay";
+};

@@ -1,0 +1,33 @@
+/*
+ * RockChip. LCD_B101ew05
+ *
+ */
+
+/ {
+
+		disp_timings: display-timings {
+                        native-mode = <&timing0>;
+                        timing0: timing0 {
+				screen-type = <SCREEN_LVDS>;
+				lvds-format = <LVDS_8BIT_3>;
+				out-face    = <OUT_P888>;
+				color-mode = <COLOR_RGB>;
+				clock-frequency = <51200000>;
+				hactive = <1024>;
+				vactive = <600>;
+				hback-porch = <100>;
+				hfront-porch = <210>;
+				vback-porch = <8>;
+				vfront-porch = <25>;
+				hsync-len = <10>;
+				vsync-len = <2>;
+				hsync-active = <0>;
+				vsync-active = <0>;
+				de-active = <0>;
+				pixelclk-active = <0>;
+				swap-rb = <0>;
+				swap-rg = <0>;
+				swap-gb = <0>;
+                     	};
+               };
+};
