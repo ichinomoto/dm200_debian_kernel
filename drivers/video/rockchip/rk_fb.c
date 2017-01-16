@@ -4346,7 +4346,6 @@ int rk_fb_register(struct rk_lcdc_driver *dev_drv,
 	}
 
 	/* show logo for primary display device */
-#if !defined(CONFIG_FRAMEBUFFER_CONSOLE)
 	if (dev_drv->prop == PRMRY) {
 		u16 xact, yact;
 		int format;
@@ -4493,7 +4492,6 @@ int rk_fb_register(struct rk_lcdc_driver *dev_drv,
 
 		rk_fb_alloc_buffer(extend_fbi);
 	}
-#endif
 	return 0;
 }
 
