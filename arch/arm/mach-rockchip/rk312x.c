@@ -628,7 +628,7 @@ static struct tc3589x_keypad_platform_data tc35893_data = {
 	.irqtype = IRQF_TRIGGER_FALLING  | IRQF_ONESHOT,
 	.enable_wakeup = true,
 	.keymap_data    = &onxy2_keymap_data,
-	.no_autorepeat  = true,
+	.no_autorepeat  = false,
 };
 
 static struct tc3589x_platform_data tc3589x_keypad_data = {
