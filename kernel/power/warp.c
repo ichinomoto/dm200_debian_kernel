@@ -202,7 +202,16 @@ struct warp_cpu_info warp_cpu_info[] = {
 #endif
 };
 
+#if 1 /* For suspend to ram */
+      /**
+       * pm_device_down is checked from device suspend/resume functions.
+       * In not WARP (hibernate) process (when process to suspend to ram etc..), device will not in sleep state.
+       * So set initial state to WARP_STATE_SUSPEND.
+       */
+int pm_device_down = WARP_STATE_SUSPEND;
+#else /* For suspend to ram */
 int pm_device_down;
+#endif /* For suspend to ram */
 
 int warp_stat;
 int warp_error;
