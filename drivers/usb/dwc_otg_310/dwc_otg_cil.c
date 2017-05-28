@@ -2610,8 +2610,22 @@ void dwc_otg_core_host_init(dwc_otg_core_if_t *core_if)
 			hprt0.b.prtpwr = 1;
 			DWC_WRITE_REG32(host_if->hprt0, hprt0.d32);
 		}
+#if 0 /* Keep vbus power off */
+	/**
+	 * If vbus power is enabled in pldata->power_enable(1),
+	 * DM200 will hung and freeze.
+	 *
+	 * So you need to supply power from usb connector
+	 * with powered hub, branched usb-otg cable or etc.
+	 * You can use usb devices and device charge in together.
+	 *
+	 * And USB id line is not connected, so you need to set HOST mode in sysfs
+	 * in this way.
+	 * echo 1 > /sys/bus/devices/platform/usb20_otg/force_usb_mode
+	 */
 		if (pldata->power_enable)
 			pldata->power_enable(1);
+#endif /* keep vbus power off */
 	}
 
 	dwc_otg_enable_host_interrupts(core_if);
