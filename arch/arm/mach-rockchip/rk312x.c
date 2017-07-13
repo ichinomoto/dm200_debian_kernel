@@ -529,7 +529,7 @@ static void onxy2_reset_ctrl(int value)
 
 static const unsigned int onxy2_keymap[] = {
 	KEY(7, 0, KEY_ESC),
-	KEY(6, 0, KEY_ZENKAKUHANKAKU),
+	KEY(6, 0, KEY_GRAVE),
 	KEY(5, 0, KEY_F1),
 	KEY(4, 0, KEY_F2),
 	KEY(7, 2, KEY_F3),
@@ -603,7 +603,7 @@ static const unsigned int onxy2_keymap[] = {
 	KEY(1, 11, KEY_RIGHTSHIFT),/* GPIO0_B4 */
 	
 	KEY(2, 11, KEY_LEFTCTRL), /* GPIO0_B6 */
-	KEY(0, 4, KEY_MENU),
+	KEY(0, 4, KEY_LEFTMETA),
 	KEY(3, 11, KEY_LEFTALT), /* GPIO0_B5 */
 	KEY(0, 1, KEY_MUHENKAN),
 	KEY(0, 6, KEY_SPACE),
