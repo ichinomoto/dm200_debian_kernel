@@ -34,6 +34,8 @@
 
 #include "bmp_helper.h"
 
+#define CONFIG_LOGO_LINUX_BMP 1 /* for 32bit framebuffer color depth */
+
 #if defined(CONFIG_RK_HDMI)
 #include "hdmi/rockchip-hdmi.h"
 #endif
