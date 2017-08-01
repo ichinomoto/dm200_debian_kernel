@@ -163,7 +163,7 @@ static int wifi_init_exit_module(int enable)
         return ret;
     }
 //#endif
-//#ifdef CONFIG_RTL_WIRELESS_SOLUTION
+#ifdef CONFIG_RTL_WIRELESS_SOLUTION
     if (type < WIFI_RTL_SERIES) {
         if (enable > 0) 
             ret = rockchip_wifi_init_module_rtkwifi();
@@ -171,8 +171,8 @@ static int wifi_init_exit_module(int enable)
             rockchip_wifi_exit_module_rtkwifi();
         return ret;
     }
-//#endif
-//#ifdef CONFIG_ESP8089
+#endif
+#ifdef CONFIG_ESP8089
     if (type == WIFI_ESP8089) {
         if (enable > 0)  
             ret = rockchip_wifi_init_module_esp8089();
@@ -180,7 +180,7 @@ static int wifi_init_exit_module(int enable)
             rockchip_wifi_exit_module_esp8089();
         return ret;
     }
-//#endif
+#endif
 
     return ret;
 }
