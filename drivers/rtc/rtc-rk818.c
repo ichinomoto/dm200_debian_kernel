@@ -89,6 +89,10 @@ static void rockchip_to_gregorian(struct rtc_time *tm)
 	unsigned long time;
 
 	rtc_tm_to_time(tm, &time);
+	/* for pomera 1.4 time offset */
+	if (tm->tm_year >= 2017) {
+		time -= 86400 * (tm->tm_year - 2017);
+	}
 	rtc_time_to_tm(time + nov2dec_transitions(tm) * 86400, tm);
 }
 
@@ -98,6 +102,10 @@ static void gregorian_to_rockchip(struct rtc_time *tm)
 	unsigned long time;
 
 	rtc_tm_to_time(tm, &time);
+	/* for pomera 1.4 time offset */
+	if (tm->tm_year >= 2017) {
+		time += 86400 * (tm->tm_year - 2017);
+	}
 	rtc_time_to_tm(time - extra_days * 86400, tm);
 
 	/* Compensate if we went back over Nov 31st (will work up to 2381) */
