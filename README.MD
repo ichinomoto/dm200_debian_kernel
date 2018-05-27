@@ -10,15 +10,17 @@ defconfigは `onyx2_warp_defconfig`
 * キーボードのキー定義変更
 * Framebufferの色深度を32bitで初期化
 * カーネルコンフィグの変更多数
+* /dev/uinputを有効化
 
 ## コンパイル
 Ubuntu14.04環境で (16.04ではaptで入るgccが新しすぎるため、14.04を使うほうが楽)
 ```
 sudo apt install gcc-arm-linux-gnueabihf
+sudo apt install bc lzop
 export ARCH=arm
 export CROSS_COMPILE=arm-linux-gnueabihf-
-sudo apt install bc lzop
-cp arch/arm/configs/d29.config .config
+make defconfig dm200_defconfig
 make dep
 make zImage
+./mkkrnlimg arch/arm/zImage kernel.img
 ```
