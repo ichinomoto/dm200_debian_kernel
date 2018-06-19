@@ -12,6 +12,9 @@
 # Change this to use a different config.h
 CONFIG ?= default
 
+CONFIG = pb-virtex5-m400-4
+BUILD = RELEASE
+
 # Validate selected config
 ifneq ($(shell [ -d $(src)/arch-$(CONFIG) ] && [ -f  $(src)/arch-$(CONFIG)/config.h ] && echo "OK"), OK)
 $(warning Current directory is $(src))

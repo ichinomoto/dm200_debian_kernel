@@ -3028,10 +3028,12 @@ drm_hdmi_avi_infoframe_from_display_mode(struct hdmi_avi_infoframe *frame,
 					 const struct drm_display_mode *mode)
 {
 	int err;
+	err = 0;
 
 	if (!frame || !mode)
 		return -EINVAL;
 
+#if 0
 	err = hdmi_avi_infoframe_init(frame);
 	if (err < 0)
 		return err;
@@ -3039,6 +3041,7 @@ drm_hdmi_avi_infoframe_from_display_mode(struct hdmi_avi_infoframe *frame,
 	frame->video_code = drm_match_cea_mode(mode);
 	if (!frame->video_code)
 		return 0;
+#endif
 
 	frame->picture_aspect = HDMI_PICTURE_ASPECT_NONE;
 	frame->active_aspect = HDMI_ACTIVE_ASPECT_PICTURE;

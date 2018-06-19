@@ -21,8 +21,8 @@
 #include "arch/config.h"             /* Configuration for current platform. The symlinc for arch is set by Makefile */
 #include "ump_ioctl.h"
 #include "ump_kernel_common.h"
-#include "ump_kernel_interface.h"
-#include "ump_kernel_interface_ref_drv.h"
+#include "../../include/ump/ump_kernel_interface.h"
+#include "../../include/ump/ump_kernel_interface_ref_drv.h"
 #include "ump_kernel_descriptor_mapping.h"
 #include "ump_kernel_memory_backend.h"
 #include "ump_kernel_memory_backend_os.h"
