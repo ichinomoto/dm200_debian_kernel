@@ -195,35 +195,35 @@ static void check_gpio_key(struct tc_keypad *keypad)
 	struct tc3589x *tc3589x = keypad->tc3589x;
 	struct tc3589x_platform_data *pdata = tc3589x->pdata;
 
-	if(pdata->get_gpio_lshift){
-		up = (u8)pdata->get_gpio_lshift();
-		if(stat[0] != up){
-			stat[0] = up;
-			send_key_event(11, 0, up, keypad);
-		}
-	}
+	/*if(pdata->get_gpio_lshift){*/
+		/*up = (u8)pdata->get_gpio_lshift();*/
+		/*if(stat[0] != up){*/
+			/*stat[0] = up;*/
+			/*send_key_event(11, 0, up, keypad);*/
+		/*}*/
+	/*}*/
 
 	if(pdata->get_gpio_rshift){
 		up = (u8)pdata->get_gpio_rshift();
 		if(stat[1] != up){
 			stat[1] = up;
-			send_key_event(11, 1, up, keypad);
+			send_key_event(0, 2, up, keypad);
 		}
 	}
 
-	if(pdata->get_gpio_ctrl){
-		up = (u8)pdata->get_gpio_ctrl();
-		if(stat[2] != up){
-			stat[2] = up;
-			send_key_event(11, 2, up, keypad);
-		}
-	}
+	/*if(pdata->get_gpio_ctrl){*/
+		/*up = (u8)pdata->get_gpio_ctrl();*/
+		/*if(stat[2] != up){*/
+			/*stat[2] = up;*/
+			/*send_key_event(11, 2, up, keypad);*/
+		/*}*/
+	/*}*/
 
 	if(pdata->get_gpio_alt){
 		up = (u8)pdata->get_gpio_alt();
 		if(stat[3] != up){
 			stat[3] = up;
-			send_key_event(11, 3, up, keypad);
+			send_key_event(0, 1, up, keypad);
 		}
 	}
 	return;
@@ -298,9 +298,6 @@ static int err_key = 0;
 #endif
 
 
-/*
- * replacement of intterupt handler. (tc3598x-keypad.c Line 301)
- */
 static irqreturn_t tc3589x_keypad_irq(int irq, void *dev)
 {
 	struct tc_keypad *keypad = dev;
@@ -317,21 +314,10 @@ static irqreturn_t tc3589x_keypad_irq(int irq, void *dev)
 			key_data_change(data, data->code, KEY_OFF_EVENT, true);
 	}
 
-#if 1	/* modified by SIE */
-	/* clear IRQ */
-	tc3589x_set_bits(tc3589x, TC3589x_KBDIC,
-			0x0, TC3589x_EVT_INT_CLR | TC3589x_KBD_INT_CLR);
-#endif	/* modified by SIE */
-
-#if 1	/* modified by SIE */
-	/* read KEY register & create event list*/
-	tc3589x_block_read(tc3589x, TC3589x_KBDCODE0, 4, kbd_code);
-#else	/* modified by SIE */
 	/* read KEY register & create event list*/
 	for(i = 0; i < (TC3589x_KBDCODE3 - TC3589x_KBDCODE0 + 1); i++){
 		kbd_code[i] = tc3589x_reg_read(tc3589x, TC3589x_KBDCODE0 + i);
 	}
-#endif	/* modified by SIE */
 	for(i = 0; i < (TC3589x_KBDCODE3 - TC3589x_KBDCODE0 + 1); i++){
 		if(kbd_code[i] == TC35893_KEYCODE_FIFO_EMPTY)
 			continue;
@@ -395,15 +381,9 @@ err_key++;
 		}
 	}
 
-#if 1	/* modified by SIE */
-	/* IRQ(RSINT) has already been automatically cleared by reading all of KEYCODEx.
-	   (See datasheet carefully!!)
-	   If next interrupt already has occurred, the interrupt is lost!! */
-#else	/* modified by SIE */
 	/* clear IRQ */
 	tc3589x_set_bits(tc3589x, TC3589x_KBDIC,
 			0x0, TC3589x_EVT_INT_CLR | TC3589x_KBD_INT_CLR);
-#endif	/* modified by SIE */
 	/* enable IRQ */
 	tc3589x_set_bits(tc3589x, TC3589x_KBDMSK,
 			0x0, TC3589x_EVT_LOSS_INT | TC3589x_EVT_INT);
@@ -517,22 +497,22 @@ static ssize_t startup_key_show(struct device *dev,
 		snprintf(p, 3, "%02X", keypad->keymap[code]);
 		p += 3;
 	}
-	if(!(up = pdata->get_gpio_ctrl())){
-		col_index = 11;
-		row_index = 2;
-		code = MATRIX_SCAN_CODE(row_index, col_index,
-								TC35893_KEYPAD_ROW_SHIFT);
-		snprintf(p, 3, "%02X", keypad->keymap[code]);
-		p += 3;
-	}
-	if(!(up = pdata->get_gpio_lshift())){
-		col_index = 11;
-		row_index = 0;
-		code = MATRIX_SCAN_CODE(row_index, col_index,
-								TC35893_KEYPAD_ROW_SHIFT);
-		snprintf(p, 3, "%02X", keypad->keymap[code]);
-		p += 3;
-	}
+	/*if(!(up = pdata->get_gpio_ctrl())){*/
+		/*col_index = 11;*/
+		/*row_index = 2;*/
+		/*code = MATRIX_SCAN_CODE(row_index, col_index,*/
+		/*						TC35893_KEYPAD_ROW_SHIFT);*/
+		/*snprintf(p, 3, "%02X", keypad->keymap[code]);*/
+		/*p += 3;*/
+	/*}*/
+	/*if(!(up = pdata->get_gpio_lshift())){*/
+		/*col_index = 11;*/
+		/*row_index = 0;*/
+		/*code = MATRIX_SCAN_CODE(row_index, col_index,*/
+		/*						TC35893_KEYPAD_ROW_SHIFT);*/
+		/*snprintf(p, 3, "%02X", keypad->keymap[code]);*/
+		/*p += 3;*/
+	/*}*/
 	if(!(up = pdata->get_gpio_rshift())){
 		col_index = 11;
 		row_index = 1;

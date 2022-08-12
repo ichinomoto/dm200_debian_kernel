@@ -527,6 +527,7 @@ static void onxy2_reset_ctrl(int value)
 	return;
 }
 
+#if 0
 static const unsigned int onxy2_keymap[] = {
 	KEY(7, 0, KEY_ESC),
 	KEY(6, 0, KEY_GRAVE),
@@ -614,6 +615,96 @@ static const unsigned int onxy2_keymap[] = {
 	KEY(1, 3, KEY_DOWN),
 	KEY(0, 3, KEY_RIGHT),
 };
+
+#else
+static const unsigned int onxy2_keymap[] = {
+	KEY(6, 10,KEY_ESC),
+	KEY(7, 10,KEY_GRAVE),
+	KEY(7, 11,KEY_F1),
+	KEY(7, 9, KEY_F2),
+	KEY(5, 9, KEY_F3),
+	KEY(6, 9, KEY_F4),
+	KEY(4, 8, KEY_F5),
+	KEY(6, 6, KEY_F6),
+	KEY(5, 5, KEY_F7),
+	KEY(7, 5, KEY_F8),
+	KEY(7, 3, KEY_F9),
+	KEY(3, 3, KEY_F10),
+	KEY(7, 0, KEY_INSERT),
+	KEY(7, 2, KEY_DELETE),
+
+	KEY(3, 10,KEY_1),
+	KEY(3, 11,KEY_2),
+	KEY(3, 9, KEY_3),
+	KEY(3, 8, KEY_4),
+	KEY(7, 8, KEY_5),
+	KEY(7, 7, KEY_6),
+	KEY(3, 7, KEY_7),
+	KEY(3, 6, KEY_8),
+	KEY(3, 5, KEY_9),
+	KEY(3, 4, KEY_0),
+	KEY(7, 4, KEY_MINUS),
+	KEY(7, 6, KEY_EQUAL),
+	KEY(2, 3, KEY_YEN),
+	KEY(5, 3, KEY_BACKSPACE),
+
+	KEY(5, 10,KEY_TAB),
+	KEY(2, 10,KEY_Q),
+	KEY(2, 11,KEY_W),
+	KEY(2, 9, KEY_E),
+	KEY(2, 8, KEY_R),
+	KEY(5, 8, KEY_T),
+	KEY(5, 7, KEY_Y),
+	KEY(2, 7, KEY_U),
+	KEY(2, 6, KEY_I),
+	KEY(2, 5, KEY_O),
+	KEY(2, 4, KEY_P),
+	KEY(5, 4, KEY_LEFTBRACE),
+	KEY(5, 6, KEY_RIGHTBRACE),
+	KEY(0, 3, KEY_ENTER),
+
+	KEY(5, 11,KEY_CAPSLOCK),
+	KEY(1, 10,KEY_A),
+	KEY(1, 11,KEY_S),
+	KEY(1, 9, KEY_D),
+	KEY(1, 8, KEY_F),
+	KEY(6, 8, KEY_G),
+	KEY(6, 7, KEY_H),
+	KEY(1, 7, KEY_J),
+	KEY(1, 6, KEY_K),
+	KEY(1, 5, KEY_L),
+	KEY(1, 4, KEY_SEMICOLON),
+	KEY(6, 4, KEY_APOSTROPHE),
+	KEY(0, 4, KEY_BACKSLASH),
+
+	KEY(4, 10,KEY_LEFTSHIFT), /* GPIO0_B7 */
+	KEY(0, 10,KEY_Z),
+	KEY(0, 11,KEY_X),
+	KEY(0, 9, KEY_C),
+	KEY(0, 8, KEY_V),
+	KEY(4, 9, KEY_B),
+	KEY(4, 7, KEY_N),
+	KEY(0, 7, KEY_M),
+	KEY(0, 6, KEY_COMMA),
+	KEY(0, 5, KEY_DOT),
+	KEY(4, 4, KEY_SLASH),
+	KEY(4, 6, KEY_RO),
+	KEY(6, 1, KEY_UP),
+	KEY(2, 0, KEY_RIGHTSHIFT),/* GPIO0_B4 */
+
+	KEY(4, 11,KEY_LEFTCTRL), /* GPIO0_B6 */
+	KEY(6, 11,KEY_LEFTMETA),
+	KEY(1, 0, KEY_LEFTALT), /* GPIO0_B5 */
+	KEY(4, 5, KEY_MUHENKAN),
+	KEY(6, 2, KEY_SPACE),
+	KEY(6, 0, KEY_HENKAN),
+	KEY(0, 0, KEY_KATAKANAHIRAGANA),
+	KEY(3, 0, KEY_RIGHTCTRL), /* GPIO0_B6 */
+	KEY(4, 1, KEY_LEFT),
+	KEY(4, 2, KEY_DOWN),
+	KEY(4, 0, KEY_RIGHT),
+};
+#endif
 
 static struct matrix_keymap_data onxy2_keymap_data = {
 	.keymap		= onxy2_keymap,
