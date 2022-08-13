@@ -16,7 +16,7 @@
 #include <linux/regulator/machine.h>
 #include <linux/wakelock.h>
 #include <linux/power_supply.h>
-#include <linux/power/rk818_battery.h>
+//#include <linux/power/rk818_battery.h>
 
 //#define RK818_START 30
 
@@ -31,12 +31,12 @@
 #define RK818_MONTHS_REG 0x04
 #define RK818_YEARS_REG 0x05
 #define RK818_WEEKS_REG 0x06
-#define RK818_ALARM_SECONDS_REG 0x07
-#define RK818_ALARM_MINUTES_REG 0x08
-#define RK818_ALARM_HOURS_REG 0x09
-#define RK818_ALARM_DAYS_REG 0x0a
-#define RK818_ALARM_MONTHS_REG 0x0b
-#define RK818_ALARM_YEARS_REG 0x0c
+#define RK818_ALARM_SECONDS_REG 0x08
+#define RK818_ALARM_MINUTES_REG 0x09
+#define RK818_ALARM_HOURS_REG 0x0a
+#define RK818_ALARM_DAYS_REG 0x0b
+#define RK818_ALARM_MONTHS_REG 0x0c
+#define RK818_ALARM_YEARS_REG 0x0d
 #define RK818_RTC_CTRL_REG 0x10
 #define RK818_RTC_STATUS_REG 0x11
 #define RK818_RTC_INT_REG 0x12

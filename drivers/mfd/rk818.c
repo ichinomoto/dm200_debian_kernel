@@ -15,6 +15,7 @@
 #include <linux/kernel.h>
 #include <linux/regulator/driver.h>
 #include <linux/mfd/rk818.h>
+#include <linux/power/rk818_battery.h>
 #include <linux/mfd/core.h>
 #include <linux/delay.h>
 #include <linux/slab.h>
@@ -1043,17 +1044,17 @@ void rk818_device_shutdown(void)
 	u8 reg = 0;
 	struct rk818 *rk818 = g_rk818;
 
-	for (i = 0; /*i < 10*/; i++) {
-		pr_info("%s\n", __func__); {struct i2c_client *i2c = rk818->i2c; i2c_unlock_adapter(i2c->adapter);}
-//		ret = rk818_i2c_read(rk818, RK818_DEVCTRL_REG, 1, &reg);
-//		if (ret < 0) {pr_err("r-err\n");
-//			continue;}
+	for (i = 0; i < 10; i++) {
+		pr_info("%s\n", __func__);
+		ret = rk818_i2c_read(rk818, RK818_DEVCTRL_REG, 1, &reg);
+		if (ret < 0)
+			continue;
 		ret = rk818_i2c_write(rk818, RK818_DEVCTRL_REG, 1,
 				     (reg | (0x1 << 0)));
 		if (ret < 0) {
-			pr_err("rk818 power off error! r=%d i=%d\n",ret,i);
+			pr_err("rk818 power off error!\n");
 			continue;
-		} pr_info("w-ok\n");
+		}
 	}
 	while(1) wfi();
 }
@@ -1151,10 +1152,15 @@ void warp_rk818_suspend (void)
 	pm_regs[68] = rk818_reg_read(rk818, CAL_OFFSET_REGL);
 }
 
+#define	RK818_RTC_STATUS_MASK_POWER_UP	(1<<7)	/* cold start flag: 1=RK818 is started in cold boot */
 void warp_rk818_resume (void)
 {
 	struct rk818 *rk818 = g_rk818;
 	u8 regs;
+
+  if( (rk818_reg_read( rk818, RK818_RTC_STATUS_REG ) & RK818_RTC_STATUS_MASK_POWER_UP) != 0 )
+  {
+	printk( KERN_INFO "%s() : RK818 cold reset has been detected, default initialize sequence in Warp image.\n", __FUNCTION__ );
 
 	rk818_pre_init(rk818);
 
@@ -1276,6 +1282,7 @@ void warp_rk818_resume (void)
 	rk818_reg_write(rk818, CAL_OFFSET_REGH, pm_regs[67]);
 	rk818_reg_write(rk818, CAL_OFFSET_REGL, pm_regs[68]);
 #endif
+  }
 }
 #endif	/* CONFIG_PM_WARP */
 
@@ -1351,7 +1358,7 @@ static int rk818_pre_init(struct rk818 *rk818)
 	/****************************************/
 	
 	/****************set pwron lp off time***/
-	ret = rk818_reg_write(rk818,RK818_DEVCTRL_REG,0x60);
+	ret = rk818_reg_write(rk818,RK818_DEVCTRL_REG,0x20);
 	if (ret <0) {
 		printk(KERN_ERR "Unable to write RK818_INT_STS_MSK_REG1 reg\n");
 		return ret;
@@ -1366,7 +1373,7 @@ static int rk818_pre_init(struct rk818 *rk818)
        val &=(~(VBAT_LOW_VOL_MASK | VBAT_LOW_ACT_MASK));
        val |= (RK818_VBAT_LOW_3V5 | EN_VBAT_LOW_IRQ);
 #else
-	   val = 0x16;
+	   val = 0x12;
 #endif
        ret = rk818_reg_write(rk818,RK818_VB_MON_REG,val);
          if (ret <0) {
@@ -1562,7 +1569,7 @@ static int  rk818_i2c_remove(struct i2c_client *i2c)
 		if (rk818->rdev[i])
 			regulator_unregister(rk818->rdev[i]);
 	i2c_set_clientdata(i2c, NULL);
-	kfree(rk818); printk("i2c removed\n");
+	kfree(rk818);
 
 	return 0;
 }

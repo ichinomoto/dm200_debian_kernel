@@ -197,4 +197,14 @@ extern int rtc_hctosys_ret;
 #define rtc_hctosys_ret -ENODEV
 #endif
 
+#ifdef	CONFIG_PM_WARP
+#define	DM250_MASK_TIMECODE_SIGNBIT	0x80000000
+#define	DM250_RTC_TM_DEFAULT_TIME	\
+    { /* 2000/1/1 9:00:00 (Sat.) */ \
+        .tm_year = 2000 - 1900, .tm_mon  = 1 - 1,   .tm_mday  = 1,  \
+        .tm_hour = 9,           .tm_min  = 0,       .tm_sec   = 0,  \
+        .tm_wday = 6,           .tm_yday = 0,       .tm_isdst = 0,  \
+    }
+#endif	// CONFIG_PM_WARP
+
 #endif /* _LINUX_RTC_H_ */

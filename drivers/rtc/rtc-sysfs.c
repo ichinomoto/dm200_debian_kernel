@@ -122,6 +122,9 @@ rtc_sysfs_show_hctosys(struct device *dev, struct device_attribute *attr,
 		return sprintf(buf, "0\n");
 }
 
+#ifdef	CONFIG_PM_WARP
+ssize_t	rk818_sysfs_save_tc( struct device *dev, struct device_attribute *attr, const char *buf, size_t n );
+#endif	// CONFIG_PM_WARP
 static struct device_attribute rtc_attrs[] = {
 	__ATTR(name, S_IRUGO, rtc_sysfs_show_name, NULL),
 	__ATTR(date, S_IRUGO, rtc_sysfs_show_date, NULL),
@@ -130,6 +133,9 @@ static struct device_attribute rtc_attrs[] = {
 	__ATTR(max_user_freq, S_IRUGO | S_IWUSR, rtc_sysfs_show_max_user_freq,
 			rtc_sysfs_set_max_user_freq),
 	__ATTR(hctosys, S_IRUGO, rtc_sysfs_show_hctosys, NULL),
+#ifdef	CONFIG_PM_WARP
+	__ATTR( update_tc, S_IWUSR, NULL, rk818_sysfs_save_tc ),
+#endif	// CONFIG_PM_WARP
 	{ },
 };
 
