@@ -267,6 +267,9 @@ static void mmc_select_card_type(struct mmc_card *card)
 	card->ext_csd.card_type = card_type;
 }
 
+/* Minimum partition switch timeout in milliseconds */
+#define MMC_MIN_PART_SWITCH_TIME	300
+
 /*
  * Decode extended CSD.
  */
@@ -293,15 +296,12 @@ static int mmc_read_ext_csd(struct mmc_card *card, u8 *ext_csd)
 		}
 	}
 
+	/*
+	* The EXT_CSD format is meant to be forward compatible. As long
+	* as CSD_STRUCTURE does not change, all values for EXT_CSD_REV
+	* are authorized, see JEDEC JESD84-B50 section B.8.
+	*/
 	card->ext_csd.rev = ext_csd[EXT_CSD_REV];
-#if 0 // for DM250
-	if (card->ext_csd.rev > 7) {
-		pr_err("%s: unrecognised EXT_CSD revision %d\n",
-			mmc_hostname(card->host), card->ext_csd.rev);
-		err = -EINVAL;
-		goto out;
-	}
-#endif
 
 	card->ext_csd.raw_sectors[0] = ext_csd[EXT_CSD_SEC_CNT + 0];
 	card->ext_csd.raw_sectors[1] = ext_csd[EXT_CSD_SEC_CNT + 1];
@@ -333,6 +333,10 @@ static int mmc_read_ext_csd(struct mmc_card *card, u8 *ext_csd)
 
 		/* EXT_CSD value is in units of 10ms, but we store in ms */
 		card->ext_csd.part_time = 10 * ext_csd[EXT_CSD_PART_SWITCH_TIME];
+		/* Some eMMC set the value too low so set a minimum */
+		if (card->ext_csd.part_time &&
+		    card->ext_csd.part_time < MMC_MIN_PART_SWITCH_TIME)
+			card->ext_csd.part_time = MMC_MIN_PART_SWITCH_TIME;
 
 		/* Sleep / awake timeout in 100ns units */
 		if (sa_shift > 0 && sa_shift <= 0x17)
@@ -504,14 +508,12 @@ static int mmc_read_ext_csd(struct mmc_card *card, u8 *ext_csd)
 		 * RPMB regions are defined in multiples of 128K.
 		 */
 		card->ext_csd.raw_rpmb_size_mult = ext_csd[EXT_CSD_RPMB_MULT];
-		#if 0 //noted by xbw,2014-03-11
 		if (ext_csd[EXT_CSD_RPMB_MULT] && mmc_host_cmd23(card->host)) {
 			mmc_part_add(card, ext_csd[EXT_CSD_RPMB_MULT] << 17,
 				EXT_CSD_PART_CONFIG_ACC_RPMB,
 				"rpmb", 0, false,
 				MMC_BLK_DATA_AREA_RPMB);
 		}
-		#endif
 	}
 
 	card->ext_csd.raw_erased_mem_count = ext_csd[EXT_CSD_ERASED_MEM_CONT];
@@ -1114,6 +1116,7 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 		 * 3. set the clock to > 52Mhz <=200MHz and
 		 * 4. execute tuning for HS200
 		 */
+		/*
 		if ((host->caps2 & MMC_CAP2_HS200) &&
 		    card->host->ops->execute_tuning) {
 			mmc_host_clk_hold(card->host);
@@ -1126,6 +1129,9 @@ static int mmc_init_card(struct mmc_host *host, u32 ocr,
 				   mmc_hostname(card->host));
 			goto err;
 		}
+		*/
+		if (host->caps2 & MMC_CAP2_HS200)
+			mmc_execute_tuning(card);
 
 		ext_csd_bits = (bus_width == MMC_BUS_WIDTH_8) ?
 				EXT_CSD_BUS_WIDTH_8 : EXT_CSD_BUS_WIDTH_4;
@@ -1481,9 +1487,9 @@ out:
  */
 static int mmc_suspend(struct mmc_host *host)
 {
-    int err;
+	int err;
 
-    err = _mmc_suspend(host, true);
+	err = _mmc_suspend(host, true);
 	if (!err) {
 		pm_runtime_disable(&host->card->dev);
 		pm_runtime_set_suspended(&host->card->dev);
@@ -1535,6 +1541,7 @@ static int mmc_resume(struct mmc_host *host)
 	pm_runtime_enable(&host->card->dev);
 	return err;
 }
+
 /*
  * Shutdown callback
  */
