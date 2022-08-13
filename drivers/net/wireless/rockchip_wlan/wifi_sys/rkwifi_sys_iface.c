@@ -46,6 +46,11 @@ static ssize_t wifi_chip_read(struct class *cls, struct class_attribute *attr, c
 	    count = sprintf(_buf, "%s", "AP6234");
 	    printk("Current WiFi chip is AP6234.\n");
 	}
+
+	if(type == WIFI_AP6236) {
+	    count = sprintf(_buf, "%s", "AP6236");
+	    printk("Current WiFi chip is AP6236.\n");
+	}
 	
 	if(type == WIFI_AP6330) {
 	    count = sprintf(_buf, "%s", "AP6330");
@@ -185,6 +190,16 @@ static int wifi_init_exit_module(int enable)
     return ret;
 }
 
+
+extern void	rkwifi_set_sysif_drv_param( int param );
+	/* => rkwifi/rk_wifi_config.c */
+
+static ssize_t wifi_driver_read(struct class *cls, struct class_attribute *attr, char *_buf)
+{
+    int count = sprintf( _buf, "%i", wifi_driver_insmod );
+    return count;
+}
+
 static ssize_t wifi_driver_write(struct class *cls, struct class_attribute *attr, const char *_buf, size_t _count)
 {
     int enable = 0, ret = 0;
@@ -192,7 +207,9 @@ static ssize_t wifi_driver_write(struct class *cls, struct class_attribute *attr
     down(&driver_sem);
     enable = simple_strtol(_buf, NULL, 10);
     //printk("%s: enable = %d\n", __func__, enable);
-    if (wifi_driver_insmod == enable) {
+    if(    ((wifi_driver_insmod == 0) && (enable == 0))
+        || ((wifi_driver_insmod != 0) && (enable != 0)) )
+    {
         printk("%s: wifi driver already %s\n", __func__, enable? "insmod":"rmmod");
     	up(&driver_sem);
         return _count;
@@ -205,6 +222,7 @@ static ssize_t wifi_driver_write(struct class *cls, struct class_attribute *attr
         wifi_init_exit_module(enable);
         wifi_driver_insmod = enable;
     }   
+    rkwifi_set_sysif_drv_param( wifi_driver_insmod );
 
     up(&driver_sem);
     //printk("%s: ret = %d\n", __func__, ret);
@@ -214,7 +232,7 @@ static ssize_t wifi_driver_write(struct class *cls, struct class_attribute *attr
 static struct class *rkwifi_class = NULL;
 static CLASS_ATTR(chip, 0664, wifi_chip_read, NULL);
 static CLASS_ATTR(power, 0660, NULL, wifi_power_write);
-static CLASS_ATTR(driver, 0660, NULL, wifi_driver_write);
+static CLASS_ATTR(driver, 0660, wifi_driver_read, wifi_driver_write);
 
 int rkwifi_sysif_init(void)
 {

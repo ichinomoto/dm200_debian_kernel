@@ -18,6 +18,14 @@
  
 #define ANDROID_FW_PATH "/system/etc/firmware/"
 
+static int sysif_drv_param;
+
+void	rkwifi_set_sysif_drv_param( int param )
+{
+    sysif_drv_param = param;
+}
+
+
 extern int get_wifi_chip_type(void);
 int rkwifi_set_firmware(char *fw, char *nvram)
 {
@@ -60,6 +68,16 @@ if (chip == WIFI_AP6212) {
 if (chip == WIFI_AP6234) {
     sprintf(fw, "%s%s", ANDROID_FW_PATH, "fw_bcm43341b0_ag.bin");
 	sprintf(nvram, "%s%s", ANDROID_FW_PATH, "nvram_AP6234.txt");
+}
+
+if (chip == WIFI_AP6236) {
+  const char *suffix =   ( sysif_drv_param == 2 ) ? "_apsta"
+                       : ( sysif_drv_param == 3 ) ? "_p2p"
+                       : ( sysif_drv_param == 4 ) ? "_ibss"
+                       : ( sysif_drv_param == 5 ) ? "_mfg" : "";
+
+    sprintf(fw, "%s%s%s%s", ANDROID_FW_PATH, "fw_bcm43438a1", suffix, ".bin");
+	sprintf(nvram, "%s%s", ANDROID_FW_PATH, "nvram_ap6212a.txt");
 }
 
 if (chip == WIFI_AP6441) {
