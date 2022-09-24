@@ -1996,6 +1996,19 @@ static struct lkg_adjust_volt_table
 	return lkg_adjust_volt_table;
 }
 
+static struct cpufreq_frequency_table unlimit_cpufreq_table[] = {
+	{.frequency = 216000,       .index = 1000000},
+	{.frequency = 408000,       .index = 1025000},
+	{.frequency = 600000,       .index = 1050000},
+	{.frequency = 696000,       .index = 1075000},
+	{.frequency = 816000,       .index = 1100000},
+	{.frequency = 1008000,      .index = 1175000},
+	{.frequency = 1200000,      .index = 1300000},
+	{.frequency = 1296000,      .index = 1350000},
+	{.frequency = 1320000,      .index = 1370000},
+	{.frequency = CPUFREQ_TABLE_END},
+};
+
 static int dvfs_node_parse_dt(struct device_node *np,
 			      struct dvfs_node *dvfs_node)
 {
@@ -2064,6 +2077,12 @@ static int dvfs_node_parse_dt(struct device_node *np,
 	} else {
 		if (of_get_dvfs_table(np, &dvfs_node->dvfs_table))
 			return -EINVAL;
+	}
+
+	// force replace cpufreq table
+	if(strcmp(dvfs_node->name,"clk_core") == 0)
+	{
+		dvfs_node->dvfs_table = unlimit_cpufreq_table;
 	}
 
 	of_property_read_u32_index(np, "lkg_adjust_volt_en", 0,
@@ -2253,6 +2272,20 @@ static int dump_dbg_map(char *buf)
 	return s - buf;
 }
 
+#if 0
+static int unlimit_cpu()
+{
+	unsigned int min_rate = 216000000;
+	unsigned int max_rate = 816000000;
+	dvfs_set_freq_volt_table(clk_get_dvfs_node("clk_core"), unlimit_cpufreq_table);
+	dvfs_get_rate_range(clk_get_dvfs_node("clk_core"));
+	max_rate = 1320000000;
+	is_unlimit_cpufreq = 1;
+	dvfs_clk_enable_limit(clk_get_dvfs_node("clk_core"), min_rate, max_rate);
+	return 0;
+}
+#endif
+
 /*********************************************************************************/
 static struct kobject *dvfs_kobj;
 struct dvfs_attribute {
@@ -2274,11 +2307,26 @@ static ssize_t dvfs_tree_show(struct kobject *kobj, struct kobj_attribute *attr,
        return dump_dbg_map(buf);
 }
 
+#if 0
+static ssize_t dvfs_unlimit_cpu(struct kobject *kobj, struct kobj_attribute *attr,
+               const char *buf, size_t n)
+{
+       unlimit_cpu();
+       return n;
+}
+static ssize_t dvfs_unlimit_cpu_state(struct kobject *kobj, struct kobj_attribute *attr,
+               char *buf)
+{
+       return sprintf(buf, "%d", is_unlimit_cpufreq);
+}
+#endif
+
 
 static struct dvfs_attribute dvfs_attrs[] = {
 	/*     node_name	permision		show_func	store_func */
 //#ifdef CONFIG_RK_CLOCK_PROC
 	__ATTR(dvfs_tree,	S_IRUSR | S_IRGRP | S_IWUSR,	dvfs_tree_show,	dvfs_tree_store),
+//	__ATTR(unlimit_cpufreq,	S_IRUSR | S_IRGRP | S_IROTH | S_IWUSR | S_IWGRP | S_IWOTH,	dvfs_unlimit_cpu_state,	dvfs_unlimit_cpu),
 //#endif
 };
 
